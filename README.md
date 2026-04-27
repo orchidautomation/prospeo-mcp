@@ -97,13 +97,54 @@ Pluxx publish currently plans these release channels:
 
 ### Installer Links
 
-After `pluxx publish` succeeds, the GitHub release is expected to include these installer assets:
+These GitHub asset URLs only work after `pluxx publish` has created the `v1.0.0` release and uploaded the installer scripts.
 
 - [install-all.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-all.sh)
 - [install-claude-code.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-claude-code.sh)
 - [install-cursor.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-cursor.sh)
 - [install-codex.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-codex.sh)
 - [install-opencode.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-opencode.sh)
+
+### Curl Install Commands
+
+Use these once the release assets exist:
+
+**Install all targets**
+
+```bash
+curl -fsSL https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-all.sh | bash
+```
+
+**Install Claude Code**
+
+```bash
+curl -fsSL https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-claude-code.sh | bash
+```
+
+**Install Cursor**
+
+```bash
+curl -fsSL https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-cursor.sh | bash
+```
+
+**Install Codex**
+
+```bash
+curl -fsSL https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-codex.sh | bash
+```
+
+**Install OpenCode**
+
+```bash
+curl -fsSL https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-opencode.sh | bash
+```
+
+If the release has not been published yet, use the local Pluxx install flow instead:
+
+```bash
+pluxx test --install --target codex --trust
+pluxx verify-install --target codex
+```
 
 ### Release Archives
 
