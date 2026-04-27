@@ -77,12 +77,55 @@ pluxx lint
 pluxx test --target claude-code cursor codex opencode
 ```
 
-To install a local target bundle after validation:
+Use `pluxx install --dry-run --target claude-code cursor codex opencode` to regenerate the current local install surfaces and reload notes.
+
+### Generated Bundles
+
+- `dist/claude-code/.claude-plugin/plugin.json`
+- `dist/cursor/.cursor-plugin/plugin.json`
+- `dist/codex/.codex-plugin/plugin.json`
+- `dist/opencode/package.json`
+
+### Publish Surfaces
+
+Use `pluxx publish --dry-run --json` to preview the published release artifacts and installer URLs.
+
+Pluxx publish currently plans these release channels:
+
+- npm package: [`opencode-prospeo`](https://www.npmjs.com/package/opencode-prospeo)
+- GitHub release: [`orchidautomation/prospeo-mcp` tag `v1.0.0`](https://github.com/orchidautomation/prospeo-mcp/releases/tag/v1.0.0)
+
+### Installer Links
+
+After `pluxx publish` succeeds, the GitHub release is expected to include these installer assets:
+
+- [install-all.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-all.sh)
+- [install-claude-code.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-claude-code.sh)
+- [install-cursor.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-cursor.sh)
+- [install-codex.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-codex.sh)
+- [install-opencode.sh](https://github.com/orchidautomation/prospeo-mcp/releases/download/v1.0.0/install-opencode.sh)
+
+### Release Archives
+
+Pluxx publish also plans versioned and latest archives for each target:
+
+- `prospeo-claude-code-v1.0.0.tar.gz`
+- `prospeo-claude-code-latest.tar.gz`
+- `prospeo-cursor-v1.0.0.tar.gz`
+- `prospeo-cursor-latest.tar.gz`
+- `prospeo-codex-v1.0.0.tar.gz`
+- `prospeo-codex-latest.tar.gz`
+- `prospeo-opencode-v1.0.0.tar.gz`
+- `prospeo-opencode-latest.tar.gz`
+
+### Install with Pluxx
 
 ```bash
 pluxx test --install --target codex --trust
 pluxx verify-install --target codex
 ```
+
+`--trust` is required because this plugin installs a `sessionStart` hook that runs `scripts/check-env.sh`.
 
 The Pluxx source of truth lives in `pluxx.config.ts`, `INSTRUCTIONS.md`, `skills/`, `commands/`, and `.pluxx/mcp.json`.
 
