@@ -41,7 +41,7 @@ npm run build
 **Claude Code:**
 
 ```bash
-claude mcp add prospeo -- node /absolute/path/to/prospeo-mcp/dist/index.js -e PROSPEO_API_KEY=your_key
+claude mcp add prospeo -- node /absolute/path/to/prospeo-mcp/build/index.js -e PROSPEO_API_KEY=your_key
 ```
 
 **Claude Desktop / Cursor / Windsurf** (add to your MCP config):
@@ -51,7 +51,7 @@ claude mcp add prospeo -- node /absolute/path/to/prospeo-mcp/dist/index.js -e PR
   "mcpServers": {
     "prospeo": {
       "command": "node",
-      "args": ["/absolute/path/to/prospeo-mcp/dist/index.js"],
+      "args": ["/absolute/path/to/prospeo-mcp/build/index.js"],
       "env": {
         "PROSPEO_API_KEY": "your_key"
       }
@@ -65,6 +65,26 @@ claude mcp add prospeo -- node /absolute/path/to/prospeo-mcp/dist/index.js -e PR
 ```bash
 PROSPEO_API_KEY=your_key npx tsx src/index.ts
 ```
+
+## Pluxx
+
+This repo now includes a Pluxx source project so the Prospeo MCP can be built into host-native plugin bundles for Claude Code, Cursor, Codex, and OpenCode.
+
+```bash
+npm run build
+pluxx doctor
+pluxx lint
+pluxx test --target claude-code cursor codex opencode
+```
+
+To install a local target bundle after validation:
+
+```bash
+pluxx test --install --target codex --trust
+pluxx verify-install --target codex
+```
+
+The Pluxx source of truth lives in `pluxx.config.ts`, `INSTRUCTIONS.md`, `skills/`, `commands/`, and `.pluxx/mcp.json`.
 
 ## Usage Examples
 

@@ -1,0 +1,23 @@
+[
+  {
+    "dirName": "account-research",
+    "title": "Account Research",
+    "description": "Research companies, organizations, and account context before taking action.",
+    "toolNames": [
+      "prospeo_account_info",
+      "prospeo_bulk_enrich_company",
+      "prospeo_enrich_company",
+      "prospeo_search_company"
+    ]
+  },
+  {
+    "dirName": "contact-discovery",
+    "title": "Contact Discovery",
+    "description": "Find people, contacts, and buyer-side context at the right accounts.",
+    "toolNames": [
+      "prospeo_bulk_enrich_person",
+      "prospeo_enrich_person",
+      "prospeo_search_person"
+    ]
+  }
+]

@@ -1,0 +1,332 @@
+{
+  "version": 1,
+  "source": {
+    "transport": "stdio",
+    "command": "node",
+    "args": [
+      "./build/index.js"
+    ],
+    "env": {
+      "PROSPEO_API_KEY": "${PROSPEO_API_KEY}"
+    }
+  },
+  "serverInfo": {
+    "name": "prospeo",
+    "version": "1.0.0"
+  },
+  "settings": {
+    "pluginName": "prospeo",
+    "displayName": "Prospeo",
+    "description": "Prospeo MCP workflows for company research, contact discovery, and verified email enrichment.",
+    "skillGrouping": "workflow",
+    "requestedHookMode": "safe",
+    "generatedHookMode": "safe",
+    "generatedHookEvents": [
+      "sessionStart"
+    ],
+    "runtimeAuthMode": "inline"
+  },
+  "userConfig": [
+    {
+      "key": "prospeo-api-key",
+      "title": "Prospeo API Key",
+      "description": "API key required to launch the Prospeo MCP server and execute Prospeo API requests.",
+      "type": "secret",
+      "required": true,
+      "envVar": "PROSPEO_API_KEY",
+      "targets": [
+        "claude-code",
+        "cursor",
+        "codex",
+        "opencode"
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "name": "prospeo_enrich_person",
+      "description": "Enrich a person to get their verified work email, title, LinkedIn, mobile, and employment history. Provide name + company, OR LinkedIn URL, OR email, OR person_id. Costs 1 credit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "description": "First name"
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name"
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name (alternative to first + last)"
+          },
+          "company_name": {
+            "type": "string",
+            "description": "Company name"
+          },
+          "company_website": {
+            "type": "string",
+            "description": "Company domain (e.g. 'acme.com')"
+          },
+          "linkedin_url": {
+            "type": "string",
+            "description": "LinkedIn profile URL (standalone — no name/company needed)"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email to enrich (standalone)"
+          },
+          "person_id": {
+            "type": "string",
+            "description": "Person ID from search results (standalone)"
+          },
+          "only_verified_email": {
+            "type": "boolean",
+            "description": "Only return verified emails (default true)"
+          },
+          "enrich_mobile": {
+            "type": "boolean",
+            "description": "Also find mobile number (costs 10 credits, default false)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "prospeo_bulk_enrich_person",
+      "description": "Enrich up to 50 people in one call. Each record needs name + company or LinkedIn URL. Returns matched/unmatched/invalid lists. Costs 1 credit per matched record.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "people": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "identifier": {
+                  "type": "string",
+                  "description": "Unique ID for this record (used to match results)"
+                },
+                "first_name": {
+                  "type": "string"
+                },
+                "last_name": {
+                  "type": "string"
+                },
+                "full_name": {
+                  "type": "string"
+                },
+                "company_name": {
+                  "type": "string"
+                },
+                "company_website": {
+                  "type": "string"
+                },
+                "linkedin_url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "identifier"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 50,
+            "description": "Array of people to enrich (max 50)"
+          },
+          "only_verified_email": {
+            "type": "boolean",
+            "description": "Only return verified emails (default true)"
+          }
+        },
+        "required": [
+          "people"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "prospeo_search_person",
+      "description": "Search 200M+ professional contacts. Returns 25 results per page. Costs 1 credit per page.\nNOTE: Search results do NOT include email/mobile. Use prospeo_enrich_person with person_id to get contact info.\n\nFilter structure (all optional):\n- company.websites.include: [\"domain.com\"] — filter by company domain\n- company.names.include: [\"Company Name\"] — filter by company name\n- person_job_title.include: [\"CRO\", \"VP Sales\"] — job title filter (also supports boolean: \"(CEO OR CTO) AND !Intern\")\n- person_seniority.include: [\"C-Suite\", \"Vice President\", \"Director\", \"Head\", \"Founder/Owner\", \"Manager\", \"Senior\"]\n- person_department.include: [\"Sales\", \"Marketing\", \"Engineering\"]\n- person_location.include: [\"United States\", \"San Francisco\"]\n- company_industry.include: [\"Software Development\"]\n- company_headcount_range: [\"51-100\", \"101-200\", \"201-500\"]\n- company_location.include: [\"United States\"]\n- company_technology.include: [\"Salesforce\"]\n- company_funding.stage: [\"Seed\", \"Series A\", \"Series B\"]\n- max_person_per_company: 3",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filters": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Search filters object — see tool description for structure"
+          },
+          "page": {
+            "type": "number",
+            "description": "Page number (default 1, 25 results per page)"
+          }
+        },
+        "required": [
+          "filters"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "prospeo_enrich_company",
+      "description": "Enrich a company by domain or name. Returns industry, description, employee count, funding, technologies, revenue, and location. Costs 1 credit.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "description": "Company domain (e.g. 'acme.com')"
+          },
+          "company_name": {
+            "type": "string",
+            "description": "Company name (use domain when possible for better matching)"
+          }
+        },
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "prospeo_search_company",
+      "description": "Search 30M+ companies by industry, size, location, funding round, and technology stack. Returns 25 results per page. Costs 1 credit per page.\n\nFilter structure (all optional):\n- company.names.include: [\"Company\"]\n- company.websites.include: [\"domain.com\"]\n- company_industry.include: [\"Software Development\"]\n- company_headcount_range: [\"51-100\", \"101-200\"]\n- company_location.include: [\"United States\"]\n- company_funding.stage: [\"Series A\", \"Series B\"]\n- company_technology.include: [\"React\", \"Python\"]\n- company_founded.min: 2020, company_founded.max: 2025",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filters": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Search filters object — see tool description for structure"
+          },
+          "page": {
+            "type": "number",
+            "description": "Page number (default 1)"
+          }
+        },
+        "required": [
+          "filters"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "prospeo_bulk_enrich_company",
+      "description": "Enrich up to 50 companies in one call. Returns industry, tech stack, funding, employee count for each. Costs 1 credit per matched record.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "companies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "identifier": {
+                  "type": "string",
+                  "description": "Unique ID for this record"
+                },
+                "domain": {
+                  "type": "string",
+                  "description": "Company domain"
+                },
+                "company_name": {
+                  "type": "string",
+                  "description": "Company name"
+                }
+              },
+              "required": [
+                "identifier"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1,
+            "maxItems": 50,
+            "description": "Array of companies to enrich (max 50)"
+          }
+        },
+        "required": [
+          "companies"
+        ],
+        "additionalProperties": false,
+        "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    },
+    {
+      "name": "prospeo_account_info",
+      "description": "Check your Prospeo account: remaining credits, plan, usage, and next renewal date. Free — no credits consumed.",
+      "inputSchema": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {}
+      },
+      "execution": {
+        "taskSupport": "forbidden"
+      }
+    }
+  ],
+  "resources": [],
+  "resourceTemplates": [],
+  "prompts": [],
+  "skills": [
+    {
+      "dirName": "account-research",
+      "title": "Account Research",
+      "description": "Research companies, organizations, and account context before taking action.",
+      "toolNames": [
+        "prospeo_account_info",
+        "prospeo_bulk_enrich_company",
+        "prospeo_enrich_company",
+        "prospeo_search_company"
+      ],
+      "resourceUris": [],
+      "resourceTemplateUris": [],
+      "promptNames": []
+    },
+    {
+      "dirName": "contact-discovery",
+      "title": "Contact Discovery",
+      "description": "Find people, contacts, and buyer-side context at the right accounts.",
+      "toolNames": [
+        "prospeo_bulk_enrich_person",
+        "prospeo_enrich_person",
+        "prospeo_search_person"
+      ],
+      "resourceUris": [],
+      "resourceTemplateUris": [],
+      "promptNames": []
+    }
+  ],
+  "managedFiles": [
+    "pluxx.config.ts",
+    "./INSTRUCTIONS.md",
+    "skills/account-research/SKILL.md",
+    "commands/account-research.md",
+    "skills/contact-discovery/SKILL.md",
+    "commands/contact-discovery.md",
+    "scripts/check-env.sh",
+    ".pluxx/taxonomy.json",
+    ".pluxx/mcp.json"
+  ]
+}
